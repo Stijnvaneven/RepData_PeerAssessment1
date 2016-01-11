@@ -14,19 +14,16 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 library(ggplot2)
-library(scales)
-library(Hmisc)
 ```
 
 ## Loading and preprocessing the data
 ```{r, results='markup', warning=TRUE, message=TRUE}
 
-activityData <- read.csv('activity.csv')
+activityData <- read.csv('acti?meanvity.csv')
 ```
 
-
 ## What is mean total number of steps taken per day?
-```{r}
+```{r, echo=TRUE}
 stepsByDay <- tapply(activityData$steps, activityData$date, sum, na.rm=TRUE)
 ```
 
@@ -40,8 +37,6 @@ qplot(stepsByDay, xlab='Total steps per day', ylab='Frequency using binwith 500'
 stepsByDayMean <- mean(stepsByDay)
 stepsByDayMedian <- median(stepsByDay)
 ```
-* Mean: `r stepsByDayMean`
-* Median:  `r stepsByDayMedian`
 
 -----
 
