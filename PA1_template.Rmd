@@ -19,7 +19,7 @@ library(ggplot2)
 ## Loading and preprocessing the data
 ```{r, results='markup', warning=TRUE, message=TRUE}
 
-activityData <- read.csv('acti?meanvity.csv')
+activityData <- read.csv('activity.csv')
 ```
 
 ## What is mean total number of steps taken per day?
