@@ -1,25 +1,145 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "PA1_template.rmd"
+author: "Stijn"
+date: "Monday, January 31, 2016"
+output: html_document
 ---
 
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-## Loading and preprocessing the real data
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
+
+# Reproducible Research: Peer Assessment 1
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+library(ggplot2)
+```
+
+## Loading and preprocessing the data
+```{r, results='markup', warning=TRUE, message=TRUE}
+
+activityData <- read.csv('activity.csv')
+str(activityData)
+```
 
 
 ## What is mean total number of steps taken per day?
+```{r, echo=TRUE}
+stepsByDay <- tapply(activityData$steps, activityData$date, sum, na.rm=TRUE)
+```
 
+## 1. Make a histogram of the total number of steps taken each day
+```{r}
+#qplot(stepsByDay, xlab='Total steps per day', ylab='Frequency using binwith 500', binwidth=500)
+hist(stepsByDay, 10, main = "Total number of steps taken per day", xlab = "")
+```
+
+## 2. Calculate and report the mean and median total number of steps taken per day
+```{r}
+stepsByDayMean <- mean(stepsByDay)
+```
+## [1] 9354
+
+```{r}
+stepsByDayMedian <- median(stepsByDay)
+```
+## [1] 10395
+-----
 
 
 ## What is the average daily activity pattern?
 
+We will remove the NA data first
 
+```{r, echo = TRUE}  
+sum(is.na(activityData$steps))
+activityData_rm<-activityData[which(!is.na(activityData$steps)),]
+```
+
+Compute the average daily activity pattern
+```{r}
+dailyActivity<-tapply(activityData_rm$steps, activityData_rm$interval, mean)
+plot(y = dailyActivity, x = names(dailyActivity), type = "l", xlab = "5-Minute-Interval", 
+    main = "Daily Activity Pattern", ylab = "Average number of steps")
+```
+
+
+Find the interval with the most steps during the day
+```{r}
+dailyActivity[dailyActivity==max(dailyActivity)]
+```
 
 ## Imputing missing values
 
+We will use the mean of the 5-minute interval. We will now create a new dataset that is equal to the original dataset but with the missing data filled in.
+```{r}
+activityData_new <- activityData
+activityData_new[which(is.na(activityData_new$steps)),1]<-
+        dailyActivity[as.character(activityData_new[which(is.na(activityData_new$steps)),3])]
+```
+
+
+```{r}
+stepsByDay_new<-tapply(activityData_new$steps, activityData_new$date, sum)
+```
+
+Make the histogram we made in the first part of the analysis, in order to visually see if there is a big effect.
+```{r}
+hist(stepsByDay_new, 10, main = "Total number of steps taken per day  
+     (missing values replaced with mean of interval)", xlab = "Steps",
+     ylim =c(0, 25))
+```
+
+```{r}
+mean(stepsByDay_new)
+```
+
+## [1] 10766
+
+```{r}
+median(stepsByDay_new)
+```
+
+## [1] 10766
+
+The impact of inputting missing data is minimal, as only the median seems to be changing but by just over one step.
+```{r}
+mean(stepsByDay_new)-mean(stepsByDay)
+```
+
+## [1] 0
+```{r}
+median(stepsByDay_new)-median(stepsByDay)
+```
+
+## [1] 1.189
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+In this part of the assigment, we will create factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
+### Check this out: http://e.lefant.net/RepData_PeerAssessment1/PA1_template.html
+
+```{r}
+daytype <- function(date) {
+    if (weekdays(as.Date(date)) %in% c("Saturday", "Sunday")) {
+        "weekend"
+    } else {
+        "weekday"
+    }
+}
+activityData_new$daytype <- as.factor(sapply(activityData_new$date, daytype))
+```
+
+
+Make the plot
+
+```{r}
+par(mfrow = c(2, 1))
+for (type in c("weekend", "weekday")) {
+    steps.type <- aggregate(steps ~ interval, data = activityData_new, subset = activityData_new$daytype == 
+        type, FUN = mean)
+    plot(steps.type, type = "l", main = type)
+}
+```
