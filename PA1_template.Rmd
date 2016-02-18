@@ -45,7 +45,6 @@ stepsByDayMean <- mean(stepsByDay)
 stepsByDayMedian <- median(stepsByDay)
 ```
 ## [1] 10395
------
 
 
 ## What is the average daily activity pattern?
@@ -103,23 +102,17 @@ median(stepsByDay_new)
 
 ## [1] 10766
 
-The impact of inputting missing data is minimal, as only the median seems to be changing but by just over one step.
+The impact of imputing missing data is minimal, as only the median seems to be changing but by just over one step.
 ```{r}
 mean(stepsByDay_new)-mean(stepsByDay)
 ```
 
-## [1] 0
 ```{r}
 median(stepsByDay_new)-median(stepsByDay)
 ```
 
-## [1] 1.189
-
-
 ## Are there differences in activity patterns between weekdays and weekends?
 In this part of the assigment, we will create factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
-
-### Check this out: http://e.lefant.net/RepData_PeerAssessment1/PA1_template.html
 
 ```{r}
 daytype <- function(date) {
@@ -134,7 +127,6 @@ activityData_new$daytype <- as.factor(sapply(activityData_new$date, daytype))
 
 
 Make the plot
-
 ```{r}
 par(mfrow = c(2, 1))
 for (type in c("weekend", "weekday")) {
